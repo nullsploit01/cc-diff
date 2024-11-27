@@ -1,7 +1,13 @@
 package internal
 
+type Diff struct{}
+
+func NewDiff() *Diff {
+	return &Diff{}
+}
+
 // use Hunt-Szymanski algo to find LCS
-func FindLCS(a, b string) string {
+func (d Diff) FindLCS(a, b string) string {
 	positions := make(map[rune][]int)
 
 	for i, char := range b {
