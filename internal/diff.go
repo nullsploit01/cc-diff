@@ -1,18 +1,27 @@
 package internal
 
-import "strings"
+import (
+	"strings"
 
-type Diff struct{}
+	"github.com/spf13/cobra"
+)
 
-func NewDiff() *Diff {
-	return &Diff{}
+type Diff struct {
+	cmd *cobra.Command
 }
 
-func (d Diff) FindLineDiff(a, b string) []string {
+func NewDiff(cmd *cobra.Command) *Diff {
+	return &Diff{
+		cmd: cmd,
+	}
+}
+
+func (d Diff) FindLineDiff(a, b string) {
 	linesA := strings.Split(a, "\n")
 	linesB := strings.Split(b, "\n")
 
-	return d.FindLCS(linesA, linesB)
+	d.PrintDiff(linesA, linesB, d.FindLCS(linesA, linesB))
+
 }
 
 // use Hunt-Szymanski algo to find LCS
@@ -63,4 +72,26 @@ func (d Diff) FindLCS(linesA, linesB []string) []string {
 	}
 
 	return lcs
+}
+
+func (d Diff) PrintDiff(linesA, linesB, lcs []string) {
+	lcsIndex := 0
+	i, j := 0, 0
+
+	for i < len(linesA) || j < len(linesB) {
+		if i < len(linesA) && j < len(linesB) && lcsIndex < len(lcs) && linesA[i] == lcs[lcsIndex] && linesB[j] == lcs[lcsIndex] {
+			i++
+			j++
+			lcsIndex++
+		} else {
+			if i < len(linesA) && (lcsIndex >= len(lcs) || linesA[i] != lcs[lcsIndex]) {
+				d.cmd.OutOrStdout().Write([]byte(("< " + linesA[i]) + "\n"))
+				i++
+			}
+			if j < len(linesB) && (lcsIndex >= len(lcs) || linesB[j] != lcs[lcsIndex]) {
+				d.cmd.OutOrStdout().Write([]byte(("> " + linesB[j]) + "\n"))
+				j++
+			}
+		}
+	}
 }

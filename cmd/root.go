@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"log"
 	"os"
 
 	"github.com/nullsploit01/cc-diff/internal"
@@ -28,9 +27,8 @@ I share a weekly coding challenge aimed at helping software engineers level up t
 These are challenges that I’ve used or am using as exercises to learn a new programming language or technology.
 Each challenge will have you writing a full application or tool. Most of which will be based on real world tools and utilities.`
 
-		d := internal.NewDiff()
-		lcs := d.FindLineDiff(a, b)
-		log.Println(lcs)
+		d := internal.NewDiff(cmd)
+		d.FindLineDiff(a, b)
 	},
 }
 
