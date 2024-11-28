@@ -79,7 +79,11 @@ func (d Diff) PrintDiff(linesA, linesB, lcs []string) {
 	i, j := 0, 0
 
 	for i < len(linesA) || j < len(linesB) {
-		if i < len(linesA) && j < len(linesB) && lcsIndex < len(lcs) && linesA[i] == lcs[lcsIndex] && linesB[j] == lcs[lcsIndex] {
+		isInLCS := lcsIndex < len(lcs) &&
+			i < len(linesA) && linesA[i] == lcs[lcsIndex] &&
+			j < len(linesB) && linesB[j] == lcs[lcsIndex]
+
+		if isInLCS {
 			i++
 			j++
 			lcsIndex++
