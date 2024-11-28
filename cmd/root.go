@@ -29,7 +29,7 @@ These are challenges that I’ve used or am using as exercises to learn a new pr
 Each challenge will have you writing a full application or tool. Most of which will be based on real world tools and utilities.`
 
 		d := internal.NewDiff()
-		lcs := d.FindLCS(a, b)
+		lcs := d.FindLineDiff(a, b)
 		log.Println(lcs)
 	},
 }

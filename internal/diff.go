@@ -8,10 +8,16 @@ func NewDiff() *Diff {
 	return &Diff{}
 }
 
-// use Hunt-Szymanski algo to find LCS
-func (d Diff) FindLCS(a, b string) string {
+func (d Diff) FindLineDiff(a, b string) []string {
 	linesA := strings.Split(a, "\n")
 	linesB := strings.Split(b, "\n")
+
+	return d.FindLCS(linesA, linesB)
+}
+
+// use Hunt-Szymanski algo to find LCS
+func (d Diff) FindLCS(linesA, linesB []string) []string {
+
 	positions := make(map[string][]int)
 
 	for i, char := range linesB {
@@ -56,5 +62,5 @@ func (d Diff) FindLCS(a, b string) string {
 		lcs[i] = string(linesB[idx])
 	}
 
-	return strings.Join(lcs, "\n")
+	return lcs
 }
