@@ -1,5 +1,7 @@
 package internal
 
+import "strings"
+
 type Diff struct{}
 
 func NewDiff() *Diff {
@@ -8,9 +10,11 @@ func NewDiff() *Diff {
 
 // use Hunt-Szymanski algo to find LCS
 func (d Diff) FindLCS(a, b string) string {
-	positions := make(map[rune][]int)
+	linesA := strings.Split(a, "\n")
+	linesB := strings.Split(b, "\n")
+	positions := make(map[string][]int)
 
-	for i, char := range b {
+	for i, char := range linesB {
 		positions[char] = append(positions[char], i)
 	}
 
@@ -39,7 +43,7 @@ func (d Diff) FindLCS(a, b string) string {
 	}
 
 	indices := []int{}
-	for _, char := range a {
+	for _, char := range linesA {
 		if idxList, exists := positions[char]; exists {
 			indices = append(indices, idxList...)
 		}
@@ -47,10 +51,10 @@ func (d Diff) FindLCS(a, b string) string {
 
 	lisIndices := findLIS(indices)
 
-	lcs := make([]rune, len(lisIndices))
+	lcs := make([]string, len(lisIndices))
 	for i, idx := range lisIndices {
-		lcs[i] = rune(b[idx])
+		lcs[i] = string(linesB[idx])
 	}
 
-	return string(lcs)
+	return strings.Join(lcs, "\n")
 }
