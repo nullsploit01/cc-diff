@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"context"
 	"os"
+	"time"
 
 	"github.com/nullsploit01/cc-diff/internal"
 	"github.com/spf13/cobra"
@@ -17,6 +19,9 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
+
 		a := `Coding Challenges helps you become a better software engineer through that build real applications.
 I share a weekly coding challenge aimed at helping software engineers level up their skills through deliberate practice.
 I’ve used or am using these coding challenges as exercise to learn a new programming language or technology.
@@ -27,8 +32,21 @@ I share a weekly coding challenge aimed at helping software engineers level up t
 These are challenges that I’ve used or am using as exercises to learn a new programming language or technology.
 Each challenge will have you writing a full application or tool. Most of which will be based on real world tools and utilities.`
 
-		d := internal.NewDiff(cmd)
-		d.FindLineDiff(a, b)
+		done := make(chan struct{})
+
+		go func() {
+			d := internal.NewDiff(cmd)
+			d.FindLineDiff(a, b)
+			close(done)
+		}()
+
+		// Wait for completion or timeout
+		select {
+		case <-done:
+		case <-ctx.Done():
+			cmd.OutOrStdout().Write([]byte("Process took too long, exiting\n"))
+			os.Exit(1)
+		}
 	},
 }
 
