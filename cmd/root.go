@@ -11,13 +11,21 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "ccdiff <file1> <file2>",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "A CLI tool to compare and display differences between files.",
+	Long: `A command-line utility for comparing files and highlighting the differences 
+in their content. This tool is ideal for tracking changes between versions of text 
+files, configuration files, or source code.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Features:
+- Identify added, removed, and unchanged lines between files.
+- Output results in a clear and readable format.
+- Simple and intuitive command-line interface.
+
+Examples:
+- Compare two files:
+  $ diff-tool file1.txt file2.txt
+
+This tool leverages the Cobra library to provide a reliable and efficient experience for developers and users alike.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 		defer cancel()
@@ -54,8 +62,4 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
-}
-
-func init() {
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
