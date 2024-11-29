@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var timeoutInSeconds float32
+
 var rootCmd = &cobra.Command{
 	Use:   "ccdiff <file1> <file2>",
 	Short: "A CLI tool to compare and display differences between files.",
@@ -27,7 +29,7 @@ Examples:
 
 This tool leverages the Cobra library to provide a reliable and efficient experience for developers and users alike.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeoutInSeconds)*time.Second)
 		defer cancel()
 
 		done := make(chan struct{})
@@ -62,4 +64,8 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
+}
+
+func init() {
+	rootCmd.Flags().Float32VarP(&timeoutInSeconds, "timeout", "t", 60, "Timeout in seconds")
 }
