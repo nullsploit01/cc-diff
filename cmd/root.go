@@ -10,7 +10,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "cc-diff",
+	Use:   "ccdiff <file1> <file2>",
 	Short: "A brief description of your application",
 	Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:
@@ -22,21 +22,20 @@ to quickly create a Cobra application.`,
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 		defer cancel()
 
-		a := `Coding Challenges helps you become a better software engineer through that build real applications.
-I share a weekly coding challenge aimed at helping software engineers level up their skills through deliberate practice.
-I’ve used or am using these coding challenges as exercise to learn a new programming language or technology.
-Each challenge will have you writing a full application or tool. Most of which will be based on real world tools and utilities.`
-
-		b := `Helping you become a better software engineer through coding challenges that build real applications.
-I share a weekly coding challenge aimed at helping software engineers level up their skills through deliberate practice.
-These are challenges that I’ve used or am using as exercises to learn a new programming language or technology.
-Each challenge will have you writing a full application or tool. Most of which will be based on real world tools and utilities.`
-
 		done := make(chan struct{})
+
+		if len(args) != 2 {
+			cmd.Usage()
+			os.Exit(1)
+		}
 
 		go func() {
 			d := internal.NewDiff(cmd)
-			d.FindLineDiff(a, b)
+			err := d.FindFileDiff(args[0], args[1])
+			if err != nil {
+				cmd.OutOrStdout().Write([]byte(err.Error()))
+				os.Exit(1)
+			}
 			close(done)
 		}()
 

@@ -1,6 +1,9 @@
 package internal
 
 import (
+	"bufio"
+	"fmt"
+	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -14,6 +17,33 @@ func NewDiff(cmd *cobra.Command) *Diff {
 	return &Diff{
 		cmd: cmd,
 	}
+}
+
+func (d Diff) FindFileDiff(file1Name, file2Name string) error {
+	file1, err := os.Open(file1Name)
+	if err != nil {
+		return fmt.Errorf("error opening file: %v", err)
+	}
+
+	file2, err := os.Open(file2Name)
+	if err != nil {
+		return fmt.Errorf("error opening file: %v", err)
+	}
+
+	var linesA, linesB []string
+	reader := bufio.NewScanner(file1)
+	reader.Split(bufio.ScanLines)
+	for reader.Scan() {
+		linesA = append(linesA, reader.Text())
+	}
+	reader = bufio.NewScanner(file2)
+	reader.Split(bufio.ScanLines)
+	for reader.Scan() {
+		linesB = append(linesB, reader.Text())
+	}
+	d.PrintDiff(linesA, linesB, d.FindLCS(linesA, linesB))
+
+	return nil
 }
 
 func (d Diff) FindLineDiff(a, b string) {
